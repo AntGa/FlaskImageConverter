@@ -4,17 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anton's Image Converter</title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/mainpage.css') }}">
 </head>
 <body>
     <div class="pog">
-        <div class="dropZone">
-            <form id="UploadForm" action="/" method="post" enctype="multipart/form-data">
-                <input type="file" id="fileInput">
+        <div id="dropZone" class="dropZone">
+            <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file">
                 <input type="submit">
             </form>
         </div>
     </div>
 </body>
+<script>
+    let dropZone = document.getElementById("dropZone");
+    let fileInput = document.getElementById("fileInput");
+    let uploadForm = document.getElementById("uploadForm");
 
+    dropZone.addEventListener("click", function () {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+            uploadForm.submit();
+        }
+    });
+
+    dropZone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        this.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", function () {
+        this.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove("dragover");
+
+        let file = e.dataTransfer.files[0];
+        fileInput.files = e.dataTransfer.files;
+        uploadForm.submit();
+    });
+</script>
 </html>
