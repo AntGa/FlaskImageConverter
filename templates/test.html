@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anton's Image Converter</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/mainpage.css') }}">
+</head>
+<body>
+    <div class="pog">
+        <div class="dropZone">
+            <form id="UploadForm" action="/" method="post" enctype="multipart/form-data">
+                <input type="file" id="fileInput">
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
