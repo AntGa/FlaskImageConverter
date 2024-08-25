@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anton's Image Converter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/mainpage.css') }}">
+</head>
+<body>
+    <div class="pog">
+        <div id="dropZone" class="dropZone">
+            <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file" required>
+                <label for="format">Select Format:</label>
+                <select id="format" name="format" required>
+                    <option value="webp">WebP</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                </select>
+                
+                <!-- Image quality selection slider -->
+                <label for="quality">Select Quality:</label>
+                <input type="range" id="quality" name="quality" min="1" max="100" value="80">
+                <span id="qualityValue">80</span>
+                
+                <input type="submit" value="Convert">
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          
+            const qualitySlider = document.getElementById("quality");
+            const qualityValue = document.getElementById("qualityValue");
+
+            // Update the quality value display when the slider changes
+            qualitySlider.addEventListener("input", function () {
+                qualityValue.textContent = qualitySlider.value;
+            });
+        });
+    </script>
+</body>
+</html>
