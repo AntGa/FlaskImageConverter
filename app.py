@@ -3,33 +3,42 @@ import os
 import zipfile
 from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, jsonify, make_response, render_template, request, send_file
 from PIL import Image
 
 app = Flask(__name__)
 
 # Rate limit configuration
 RATE_LIMIT_SECONDS = 5
-client_request_times = {}
+token_request_times = {}
+
+
+def get_token():
+    # Generate a unique token for each request
+    # You could use a session ID or some other unique identifier
+    return request.cookies.get("user_token")
 
 
 def rate_limit_middleware(f):
     def decorator(*args, **kwargs):
-        ip_address = request.remote_addr
-        current_time = datetime.now()
+        token = get_token()
+        if token:
+            current_time = datetime.now()
 
-        if ip_address in client_request_times:
-            last_request_time = client_request_times[ip_address]
-            time_since_last_request = (current_time - last_request_time).total_seconds()
+            if token in token_request_times:
+                last_request_time = token_request_times[token]
+                time_since_last_request = (
+                    current_time - last_request_time
+                ).total_seconds()
 
-            if time_since_last_request < RATE_LIMIT_SECONDS:
-                return jsonify(
-                    {
-                        "error": "Rate limit exceeded. Please wait before making another request."
-                    }
-                ), 429
+                if time_since_last_request < RATE_LIMIT_SECONDS:
+                    return jsonify(
+                        {
+                            "error": "Rate limit exceeded. Please wait before making another request."
+                        }
+                    ), 429
 
-        client_request_times[ip_address] = current_time
+            token_request_times[token] = current_time
         return f(*args, **kwargs)
 
     return decorator
@@ -55,13 +64,11 @@ def upload_file():
         format = request.form.get("format", "webp").lower()
         quality = int(request.form.get("quality", 80))
 
-        # Check file count
         if len(files) > 5:
             return render_template(
                 "index.html", error="You can only upload up to 5 images at a time."
             )
 
-        # Check file size and type
         for file in files:
             if file.content_length > app.config["MAX_CONTENT_LENGTH"]:
                 return render_template(
@@ -125,6 +132,14 @@ def upload_file():
                 download_name="converted_images.zip",
                 as_attachment=True,
             )
+
+    # Set a unique token for the user
+    token = request.cookies.get("user_token")
+    if not token:
+        token = str(datetime.now().timestamp())
+        resp = make_response(render_template("index.html"))
+        resp.set_cookie("user_token", token)
+        return resp
 
     return render_template("index.html")
 
