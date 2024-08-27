@@ -1,23 +1,14 @@
 import io
 import os
-import time
 import zipfile
 
-import redis
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, render_template, request, send_file
 from PIL import Image
 
 app = Flask(__name__)
 
 # Set the maximum file size (20MB)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB
-
-# Redis configuration
-redis_client = redis.StrictRedis(host="localhost", port=6379, db=0)
-
-# Rate limiting configuration
-RATE_LIMIT = 2  # Number of requests
-TIME_FRAME = 60  # Time frame in seconds
 
 
 def is_image(file):
@@ -26,25 +17,6 @@ def is_image(file):
             return img.format in ["JPEG", "PNG", "WEBP"]
     except Exception:
         return False
-
-
-@app.before_request
-def limit_remote_addr():
-    ip = request.remote_addr
-    current_time = int(time.time())
-    key = f"rate_limit:{ip}"
-
-    request_count = redis_client.get(key)
-    if request_count and int(request_count) >= RATE_LIMIT:
-        return jsonify(
-            {
-                "error": "Rate limit exceeded, Please wait 2 seconds before making another request"
-            }
-        ), 429
-
-    # Increment the request count and set expiration time
-    redis_client.incr(key)
-    redis_client.expire(key, TIME_FRAME)
 
 
 @app.route("/", methods=["GET", "POST"])
