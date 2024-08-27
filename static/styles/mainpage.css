@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif; 
 }
 
 .pog {
@@ -33,4 +36,44 @@
     background-color: white;
     border-radius: 20px;
     padding: 20px;
+}
+
+.inputForm label[for="fileInput"] {
+    background-color: #9D7CCF; /* Use the purple color for the file input button */
+    border: none;             
+    color: white;          
+    font-weight: 700;        
+    padding: 15px 20px;       
+    text-align: center;       
+    text-decoration: none;    
+    display: inline-block;    
+    font-size: 16px;          
+    margin: 10px 2px;         
+    cursor: pointer;          
+    border-radius: 8px;       
+    transition: background-color 0.3s ease; 
+}
+
+.inputForm input[type="file"] {
+    display: none; /* Hide the default file input */
+}
+
+.inputForm label[for="fileInput"]:hover {
+    background-color: #6272A4; /* Darker shade on hover */
+}
+
+.inputForm input[type="submit"] {
+    background-color: #9D7CCF; /* Purple background */
+    border: none;             
+    color: white;        
+    font-weight: 700;     
+    padding: 15px 20px;       
+    text-align: center;       
+    text-decoration: none;    
+    display: inline-block;    
+    font-size: 16px;          
+    margin: 10px 2px;         
+    cursor: pointer;          
+    border-radius: 8px;       
+    transition: background-color 0.3s ease; 
 }

@@ -10,7 +10,8 @@
     <div class="pog">
         <div id="dropZone" class="dropZone">
             <form class="inputForm" id="uploadForm" action="/" method="post" enctype="multipart/form-data">
-                <input type="file" id="fileInput" name="file[]" multiple required>
+                <label class="file-label" for="fileInput">Choose Files</label>
+                <input type="file" id="fileInput" name="file" required multiple>
                 <label for="format">Select Format:</label>
                 <select id="format" name="format" required>
                     <option value="webp">WebP</option>
@@ -18,7 +19,6 @@
                     <option value="png">PNG</option>
                 </select>
                 
-                <!-- Image quality selection slider -->
                 <label for="quality">Select Quality:</label>
                 <input type="range" id="quality" name="quality" min="1" max="100" value="80">
                 <span id="qualityValue">80</span>
