@@ -42,6 +42,7 @@
             const qualitySlider = document.getElementById("quality");
             const qualityValue = document.getElementById("qualityValue");
             const errorMessage = document.getElementById("error-message");
+            let isSubmitting = false;
             
             // Update the quality value display when the slider changes
             qualitySlider.addEventListener("input", function () {
@@ -110,6 +111,17 @@
                     }
                 }
             }
+
+            // Prevent multiple form submissions
+            const form = document.getElementById('uploadForm');
+            form.addEventListener('submit', function(event) {
+                if (isSubmitting) {
+                    event.preventDefault();
+                    return;
+                }
+                isSubmitting = true;
+                setTimeout(() => isSubmitting = false, 5000); // Allow form submission once every 5 seconds
+            });
         });
     </script>
 </body>
