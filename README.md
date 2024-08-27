@@ -32,12 +32,42 @@ flask run
 **4. Open the application in your browser**
 Visit http://localhost:5000 to access the image converter interface.
 
+## Using the Image Converter
+### Open the Application
+- Navigate to http://localhost:8080 in your web browser to access the image converter interface.
+### Upload Images
+- Drag and Drop: Drag and drop image files into the drop zone area.
+- Select Files: Alternatively, click on the file input to select multiple image files from your file system. You can upload up to 5 images at a time, each with a maximum size of 20MB.
+### Select Format
+Choose the desired format for conversion from the dropdown menu:
+- WebP
+- JPEG
+- PNG
+
+### Select Quality
+
+Adjust the quality of the output images using the slider. The quality ranges from 1 (lowest) to 100 (highest). This option is available for WebP and JPEG formats.
+Convert Images
+
+Click the Convert button to start the conversion process.
+Download the Results
+
+If only one image is uploaded, the converted image will be downloaded automatically.
+If multiple images are uploaded, a ZIP file containing all converted images will be downloaded.
+
+## Error Handling
+Rate Limiting: To prevent spam, the server limits requests to one every 5 seconds from the same IP address.
+File Size and Type Checks: Ensure each file is less than 20MB and is a valid image format (JPEG, PNG, WebP). Errors will be displayed if the constraints are not met.
+
 ## Deployment
 The application is designed to be deployed using Docker and managed through GitHub Actions for CI/CD. It can be easily deployed to Google Cloud Run for scalable, serverless deployment. (Not that it's meant to this was more of a test)
 
 - Docker: Containerize the application for consistent and isolated environments.
 - GitHub Actions: Automate the deployment pipeline.
 - Google Cloud Run: Run the application in a scalable, serverless environment.
+
+## Screenshots
+![image](https://github.com/user-attachments/assets/8a8506fa-faf1-4f7c-b858-303dd1b462eb)
 
 ## Icons used
 [Badges4Readme](https://github.com/alexandresanlim/Badges4-README.md-Profile) - alexandresanlim
