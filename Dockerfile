@@ -6,10 +6,13 @@ WORKDIR /app
 
 # Copy the requirements file and install dependencies
 COPY requirements.txt requirements.txt
+
+EXPOSE 8080
+
 RUN pip install -r requirements.txt
 
 # Copy the rest of the application code
 COPY . .
 
 # Specify the command to run the app
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["python", "app.py"]
