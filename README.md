@@ -33,7 +33,7 @@ flask run
 Visit http://localhost:5000 to access the image converter interface.
 
 ## Deployment
-The application is designed to be deployed using Docker and managed through GitHub Actions for CI/CD. It can be easily deployed to Google Cloud Run for scalable, serverless deployment.
+The application is designed to be deployed using Docker and managed through GitHub Actions for CI/CD. It can be easily deployed to Google Cloud Run for scalable, serverless deployment. (Not that it's meant to this was more of a test)
 
 - Docker: Containerize the application for consistent and isolated environments.
 - GitHub Actions: Automate the deployment pipeline.
