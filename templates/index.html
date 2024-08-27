@@ -31,9 +31,7 @@
                 <input type="submit" value="Convert">
                 
                 <!-- Display error message if any -->
-                {% if error %}
-                <div class="error-message">{{ error }}</div>
-                {% endif %}
+                <div id="error-message" class="error-message"></div>
             </form>
         </div>
     </div>
@@ -43,11 +41,14 @@
             const fileInput = document.getElementById("fileInput");
             const qualitySlider = document.getElementById("quality");
             const qualityValue = document.getElementById("qualityValue");
-
+            const errorMessage = document.getElementById("error-message");
+            
+            // Update the quality value display when the slider changes
             qualitySlider.addEventListener("input", function () {
                 qualityValue.textContent = qualitySlider.value;
             });
 
+            // Drag and drop functionality
             dropZone.addEventListener("dragover", function (e) {
                 e.preventDefault();
                 dropZone.classList.add("dragover");
@@ -60,36 +61,55 @@
             dropZone.addEventListener("drop", function (e) {
                 e.preventDefault();
                 dropZone.classList.remove("dragover");
-
-                // Add the dropped files to the file input
-                if (e.dataTransfer.files.length) {
-                    const files = e.dataTransfer.files;
-                    
-                    // Check if the number of files is within the limit
-                    if (files.length > 5) {
-                        alert("You can only upload up to 5 images at a time.");
-                        fileInput.value = ''; // Clear file input
-                        return;
-                    }
-
-                    // Check if all files are images
-                    let allImages = true;
-                    for (let i = 0; i < files.length; i++) {
-                        if (!files[i].type.startsWith('image/')) {
-                            allImages = false;
-                            break;
-                        }
-                    }
-                    
-                    if (!allImages) {
-                        alert("All files must be valid images.");
-                        fileInput.value = ''; // Clear file input
-                        return;
-                    }
-
-                    fileInput.files = files;
-                }
+                handleFiles(e.dataTransfer.files);
             });
+
+            fileInput.addEventListener("change", function () {
+                handleFiles(fileInput.files);
+            });
+
+            function handleFiles(files) {
+                // Clear previous error messages
+                errorMessage.textContent = "";
+
+                if (files.length > 5) {
+                    errorMessage.textContent = "You can only upload up to 5 images at a time.";
+                    fileInput.value = ''; // Clear file input
+                    return;
+                }
+
+                let allImages = true;
+                let validFiles = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+
+                    // Check file size
+                    if (file.size > 20 * 1024 * 1024) { // 20MB
+                        errorMessage.textContent = "Each file must be less than 20MB in size.";
+                        fileInput.value = ''; // Clear file input
+                        return;
+                    }
+
+                    // Check if file is an image
+                    if (!file.type.startsWith('image/')) {
+                        allImages = false;
+                        errorMessage.textContent = "All files must be valid images.";
+                        fileInput.value = ''; // Clear file input
+                        return;
+                    }
+
+                    validFiles.push(file);
+                }
+
+                if (allImages && validFiles.length <= 5) {
+                    fileInput.files = new DataTransfer().files; // Clear file input
+                    for (const file of validFiles) {
+                        const dt = new DataTransfer();
+                        dt.items.add(file);
+                        fileInput.files = dt.files;
+                    }
+                }
+            }
         });
     </script>
 </body>
