@@ -11,7 +11,7 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":
-        files = request.files.getlist("file[]")  # Get the list of files
+        files = request.files.getlist("file")  # Correctly retrieve the list of files
         format = request.form.get("format", "webp").lower()
         quality = int(request.form.get("quality", 80))
 

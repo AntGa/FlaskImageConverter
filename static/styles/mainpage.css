@@ -54,9 +54,6 @@
     transition: background-color 0.3s ease; 
 }
 
-.inputForm input[type="file"] {
-    display: none; /* Hide the default file input */
-}
 
 .inputForm label[for="fileInput"]:hover {
     background-color: #6272A4; /* Darker shade on hover */
