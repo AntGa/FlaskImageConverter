@@ -81,6 +81,7 @@
 
                 let allImages = true;
                 let validFiles = [];
+
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
 
@@ -103,12 +104,10 @@
                 }
 
                 if (allImages && validFiles.length <= 5) {
-                    fileInput.files = new DataTransfer().files; // Clear file input
-                    for (const file of validFiles) {
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        fileInput.files = dt.files;
-                    }
+                    // Use DataTransfer to update file input
+                    const dt = new DataTransfer();
+                    validFiles.forEach(file => dt.items.add(file));
+                    fileInput.files = dt.files;
                 }
             }
 
