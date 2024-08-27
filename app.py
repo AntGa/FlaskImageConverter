@@ -7,31 +7,56 @@ from PIL import Image
 
 app = Flask(__name__)
 
+# Set the maximum file size (20MB)
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB
+
+
+def is_image(file):
+    try:
+        with Image.open(file.stream) as img:
+            return img.format in ["JPEG", "PNG", "WEBP"]
+    except Exception:
+        return False
+
 
 @app.route("/", methods=["GET", "POST"])
 def upload_file():
     if request.method == "POST":
-        files = request.files.getlist("file")  # Correctly retrieve the list of files
+        files = request.files.getlist("file")
         format = request.form.get("format", "webp").lower()
         quality = int(request.form.get("quality", 80))
 
+        # Check file count
+        if len(files) > 5:
+            return render_template(
+                "index.html", error="You can only upload up to 5 images at a time."
+            )
+
+        # Check file size and type
+        for file in files:
+            if file.content_length > app.config["MAX_CONTENT_LENGTH"]:
+                return render_template(
+                    "index.html", error="Each file must be less than 20MB in size."
+                )
+            if not is_image(file):
+                return render_template(
+                    "index.html",
+                    error="All files must be valid image formats (JPEG, PNG, or WEBP).",
+                )
+
         if len(files) == 1:
-            # If only one file is uploaded, handle it directly
             file = files[0]
             image = Image.open(file.stream)
 
             output_io = io.BytesIO()
             save_kwargs = {}
 
-            # Set the quality if the selected format supports it
             if format in ["jpeg", "webp"]:
                 save_kwargs["quality"] = quality
 
-            # Save the image to the output stream in the selected format
             image.save(output_io, format=format.upper(), **save_kwargs)
             output_io.seek(0)
 
-            # Extract original filename and create a new filename
             original_filename = file.filename
             basename, ext = os.path.splitext(original_filename)
             new_filename = f"{basename}_converted.{format}"
@@ -44,7 +69,6 @@ def upload_file():
             )
 
         elif len(files) > 1:
-            # If multiple files are uploaded, create a ZIP archive
             zip_output = io.BytesIO()
             with zipfile.ZipFile(zip_output, "w") as zipf:
                 for file in files:
@@ -52,25 +76,20 @@ def upload_file():
                     output_io = io.BytesIO()
                     save_kwargs = {}
 
-                    # Set the quality if the selected format supports it
                     if format in ["jpeg", "webp"]:
                         save_kwargs["quality"] = quality
 
-                    # Save the image to the output stream in the selected format
                     image.save(output_io, format=format.upper(), **save_kwargs)
                     output_io.seek(0)
 
-                    # Extract original filename and create a new filename
                     original_filename = file.filename
                     basename, ext = os.path.splitext(original_filename)
                     new_filename = f"{basename}_converted.{format}"
 
-                    # Write the converted image to the ZIP file
                     zipf.writestr(new_filename, output_io.read())
 
             zip_output.seek(0)
 
-            # Send the ZIP file as a downloadable attachment
             return send_file(
                 zip_output,
                 mimetype="application/zip",

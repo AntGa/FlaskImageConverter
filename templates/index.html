@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anton's Image Converter</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/mainpage.css') }}">
+    <style>
+        .error-message {
+            color: red;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <div class="pog">
@@ -23,6 +29,11 @@
                 <span id="qualityValue">80</span>
                 
                 <input type="submit" value="Convert">
+                
+                <!-- Display error message if any -->
+                {% if error %}
+                <div class="error-message">{{ error }}</div>
+                {% endif %}
             </form>
         </div>
     </div>
@@ -33,12 +44,10 @@
             const qualitySlider = document.getElementById("quality");
             const qualityValue = document.getElementById("qualityValue");
 
-            // Update the quality value display when the slider changes
             qualitySlider.addEventListener("input", function () {
                 qualityValue.textContent = qualitySlider.value;
             });
 
-            // Drag and drop functionality
             dropZone.addEventListener("dragover", function (e) {
                 e.preventDefault();
                 dropZone.classList.add("dragover");
@@ -54,7 +63,31 @@
 
                 // Add the dropped files to the file input
                 if (e.dataTransfer.files.length) {
-                    fileInput.files = e.dataTransfer.files;
+                    const files = e.dataTransfer.files;
+                    
+                    // Check if the number of files is within the limit
+                    if (files.length > 5) {
+                        alert("You can only upload up to 5 images at a time.");
+                        fileInput.value = ''; // Clear file input
+                        return;
+                    }
+
+                    // Check if all files are images
+                    let allImages = true;
+                    for (let i = 0; i < files.length; i++) {
+                        if (!files[i].type.startsWith('image/')) {
+                            allImages = false;
+                            break;
+                        }
+                    }
+                    
+                    if (!allImages) {
+                        alert("All files must be valid images.");
+                        fileInput.value = ''; // Clear file input
+                        return;
+                    }
+
+                    fileInput.files = files;
                 }
             });
         });
