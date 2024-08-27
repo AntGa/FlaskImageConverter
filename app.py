@@ -1,11 +1,39 @@
 import io
 import os
 import zipfile
+from datetime import datetime
 
-from flask import Flask, render_template, request, send_file
+from flask import Flask, jsonify, render_template, request, send_file
 from PIL import Image
 
 app = Flask(__name__)
+
+# Rate limit configuration
+RATE_LIMIT_SECONDS = 5
+client_request_times = {}
+
+
+def rate_limit_middleware(f):
+    def decorator(*args, **kwargs):
+        ip_address = request.remote_addr
+        current_time = datetime.now()
+
+        if ip_address in client_request_times:
+            last_request_time = client_request_times[ip_address]
+            time_since_last_request = (current_time - last_request_time).total_seconds()
+
+            if time_since_last_request < RATE_LIMIT_SECONDS:
+                return jsonify(
+                    {
+                        "error": "Rate limit exceeded. Please wait before making another request."
+                    }
+                ), 429
+
+        client_request_times[ip_address] = current_time
+        return f(*args, **kwargs)
+
+    return decorator
+
 
 # Set the maximum file size (20MB)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024  # 20MB
@@ -20,6 +48,7 @@ def is_image(file):
 
 
 @app.route("/", methods=["GET", "POST"])
+@rate_limit_middleware
 def upload_file():
     if request.method == "POST":
         files = request.files.getlist("file")
